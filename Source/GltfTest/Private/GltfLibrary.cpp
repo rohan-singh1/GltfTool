@@ -1,4 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This file is part of the Blueprint accessible GLTF data library.
+// 
+// Copyright (c) 2024 - Rohan Singh
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -20,10 +25,9 @@
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
 #include "tiny_gltf.h"
-//#include "ProceduralMeshComponent.h"
 
 
-// Function to load and print glTF data
+
 void UGltfLibrary::LoadGLTF(const FString& FilePath)
 {
     // Create a TinyGLTF loader object
@@ -69,6 +73,7 @@ void UGltfLibrary::LoadGLTF(const FString& FilePath)
     UE_LOG(LogTemp, Log, TEXT("Number of scenes: %d"), model.scenes.size());
     UE_LOG(LogTemp, Log, TEXT("Number of nodes: %d"), model.nodes.size());
     UE_LOG(LogTemp, Log, TEXT("Number of meshes: %d"), model.meshes.size());
+    UE_LOG(LogTemp, Log, TEXT("Number of materials: %d"), model.materials.size());
 
     // Print node names and mesh names if available
     for (size_t i = 0; i < model.nodes.size(); i++)
@@ -83,60 +88,5 @@ void UGltfLibrary::LoadGLTF(const FString& FilePath)
         const auto& mesh = model.meshes[i];
         FString meshName = mesh.name.empty() ? TEXT("Unnamed Mesh") : FString(mesh.name.c_str());
         UE_LOG(LogTemp, Log, TEXT("Mesh %d: %s"), i, *meshName);
-        //CreateProceduralMesh(mesh, model);
     }
 }
-
-//// Create a procedural mesh from glTF mesh data
-//void UGltfLibrary::CreateProceduralMesh(const tinygltf::Mesh& mesh, tinygltf::Model model)
-//{
-//    for (const tinygltf::Primitive& primitive : mesh.primitives) {
-//        // Retrieve vertex positions
-//        const tinygltf::Accessor& posAccessor = model.accessors[primitive.attributes.find("POSITION")->second];
-//        const tinygltf::BufferView& posView = model.bufferViews[posAccessor.bufferView];
-//        const tinygltf::Buffer& posBuffer = model.buffers[posView.buffer];
-//
-//        // Retrieve vertex normals (if available)
-//        const tinygltf::Accessor* normalAccessor = nullptr;
-//        const tinygltf::BufferView* normalView = nullptr;
-//        const tinygltf::Buffer* normalBuffer = nullptr;
-//
-//        auto normalIt = primitive.attributes.find("NORMAL");
-//        if (normalIt != primitive.attributes.end()) {
-//            normalAccessor = &model.accessors[normalIt->second];
-//            normalView = &model.bufferViews[normalAccessor->bufferView];
-//            normalBuffer = &model.buffers[normalView->buffer];
-//        }
-//
-//        // Retrieve index data
-//        const tinygltf::Accessor& indexAccessor = model.accessors[primitive.indices];
-//        const tinygltf::BufferView& indexView = model.bufferViews[indexAccessor.bufferView];
-//        const tinygltf::Buffer& indexBuffer = model.buffers[indexView.buffer];
-//
-//        // Create arrays to hold Unreal's vertex and index data
-//        TArray<FVector> Vertices;
-//        TArray<int32> Triangles;
-//
-//        // Populate vertices
-//        for (size_t i = 0; i < posAccessor.count; i++) {
-//            float x = *((float*)(&posBuffer.data[posView.byteOffset + i * 12]));
-//            float y = *((float*)(&posBuffer.data[posView.byteOffset + i * 12 + 4]));
-//            float z = *((float*)(&posBuffer.data[posView.byteOffset + i * 12 + 8]));
-//            Vertices.Add(FVector(x, y, z));
-//        }
-//
-//        // Populate triangles
-//        for (size_t i = 0; i < indexAccessor.count; i++) {
-//            int32 index = *((unsigned short*)(&indexBuffer.data[indexView.byteOffset + i * 2])); // Assuming 16-bit indices
-//            Triangles.Add(index);
-//        }
-//
-//        //// Create the ProceduralMeshComponent dynamically and attach it to the actor
-//        //UProceduralMeshComponent* ProcMesh = NewObject<UProceduralMeshComponent>(GetOwner());
-//        //ProcMesh->RegisterComponent();
-//        //ProcMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
-//
-//        //// Attach the procedural mesh to the actor
-//        //ProcMesh->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-//    }
-//}
